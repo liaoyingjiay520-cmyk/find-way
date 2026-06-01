@@ -206,7 +206,8 @@ input[type=range]::-moz-range-thumb{width:36px;height:36px;border-radius:50%;bac
 .foot{font-size:12px;color:rgba(255,255,255,.2);text-align:center;line-height:1.9;margin:20px 0 10px;}
 
 /* ── S0 full-screen layout ───────────────────────────── */
-.s0-full{display:flex!important;flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:0 28px 40px;text-align:center;}
+.s0-full{flex-direction:column;align-items:center;justify-content:center;min-height:100vh;padding:0 28px 40px;text-align:center;}
+.screen.active.s0-full{display:flex;}
 
 /* Orbit badge */
 .s0-orbit{position:relative;width:96px;height:96px;display:flex;align-items:center;justify-content:center;margin-bottom:40px;}
@@ -514,7 +515,7 @@ function startTest(){
   profile.city=document.getElementById('pCity').value;
   profile.climate=document.getElementById('pClimate').value;
   profile.cities=selCities.length?[...selCities]:[];
-  totalQ=mode==='deep'?100:50;
+  totalQ=mode==='deep'?QS.length:50;
   answers=new Array(totalQ).fill(4);
   curQ=0;
   showQ(0);
