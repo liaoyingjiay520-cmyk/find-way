@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>寻途 · 找到你想做的事</title>
+<style>
+:root{
+  --glass:rgba(28,16,12,0.58);
+  --glass2:rgba(255,255,255,0.06);
+  --bdr:rgba(255,255,255,0.11);
+  --bdr2:rgba(255,255,255,0.2);
+  --tx:#f0e8e0;
+  --sub:rgba(240,232,224,0.5);
+  --muted:rgba(240,232,224,0.28);
+  --accent:#ddc8b0;
+  --warm:#c08060;
+  --glow:rgba(192,128,96,0.35);
+  --r-sm:12px;--r-md:20px;--r-lg:28px;--r-pill:100px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;}
+body{font-family:-apple-system,'PingFang SC','Helvetica Neue',sans-serif;background:#1a0e0a;color:var(--tx);min-height:100vh;overflow-x:hidden;}
+
+.bg{position:fixed;inset:0;z-index:0;
+  background:
+    radial-gradient(ellipse 90% 55% at 15% 10%,rgba(160,80,45,0.55) 0%,transparent 60%),
+    radial-gradient(ellipse 70% 70% at 85% 85%,rgba(90,35,15,0.8) 0%,transparent 60%),
+    radial-gradient(ellipse 110% 110% at 50% 50%,#3a1e10 0%,#120806 100%);
+}
+.bg-mist{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 130% 35% at 50% 0%,rgba(210,155,110,0.2) 0%,transparent 55%),
+    radial-gradient(ellipse 80% 25% at 50% 100%,rgba(50,20,10,0.7) 0%,transparent 50%);
+}
+
+.app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;}
+
+.pgbar{position:sticky;top:0;z-index:100;height:2px;background:rgba(255,255,255,0.07);}
+.pgfill{height:100%;background:linear-gradient(90deg,var(--warm),var(--accent));transition:width .6s cubic-bezier(.4,0,.2,1);box-shadow:0 0 10px var(--glow);}
+
+.screen{display:none;padding:44px 20px 130px;animation:up .4s ease;}
+.screen.active{display:block;}
+@keyframes up{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+
+/* Glass */
+.glass{background:var(--glass);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid var(--bdr);border-radius:var(--r-lg);}
+.glass2{background:var(--glass2);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid var(--bdr);border-radius:var(--r-md);}
+
+/* Type */
+.lbl{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);}
+h1{font-size:36px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;color:var(--tx);}
+h2{font-size:24px;font-weight:700;letter-spacing:-.5px;color:var(--tx);}
+h3{font-size:17px;font-weight:700;color:var(--tx);}
+.sub{font-size:15px;color:var(--sub);line-height:1.7;}
+
+/* Buttons */
+.btn{display:block;width:100%;background:rgba(221,200,176,0.92);color:#1e0e06;border:none;border-radius:var(--r-pill);padding:16px 24px;font-size:16px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .2s;letter-spacing:.2px;}
+.btn:hover:not(:disabled){background:#fff;transform:translateY(-1px);box-shadow:0 8px 30px rgba(0,0,0,.35);}
+.btn:disabled{background:rgba(255,255,255,.09);color:rgba(255,255,255,.2);cursor:not-allowed;transform:none;}
+.btn-ghost{display:block;width:100%;background:rgba(255,255,255,.06);color:var(--sub);border:1px solid var(--bdr);border-radius:var(--r-pill);padding:14px 24px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;transition:all .2s;}
+.btn-ghost:hover{background:rgba(255,255,255,.1);color:var(--tx);}
+
+.bot{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:480px;padding:14px 20px 40px;background:linear-gradient(to top,rgba(26,14,10,.97) 65%,transparent);z-index:50;display:flex;flex-direction:column;gap:8px;}
+
+/* Form */
+.fsec{margin-bottom:22px;}
+.fsec .lbl{display:block;margin-bottom:8px;}
+.fi{width:100%;background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:var(--r-md);padding:13px 16px;font-size:15px;color:var(--tx);font-family:inherit;outline:none;transition:border-color .2s;-webkit-appearance:none;}
+.fi:focus{border-color:rgba(221,200,176,.4);background:rgba(255,255,255,.08);}
+.fi::placeholder{color:var(--muted);}
+select.fi option{background:#2a1208;}
+
+/* Chips */
+.chips{display:flex;flex-wrap:wrap;gap:7px;}
+.chip{background:rgba(255,255,255,.04);border:1px solid var(--bdr);border-radius:var(--r-pill);padding:8px 15px;font-size:13px;font-weight:500;color:var(--sub);cursor:pointer;transition:all .18s;user-select:none;white-space:nowrap;}
+.chip:hover{border-color:rgba(221,200,176,.3);color:var(--tx);}
+.chip.on{background:rgba(221,200,176,.13);border-color:var(--accent);color:var(--accent);}
+
+/* Mode cards */
+.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0;}
+.mc{padding:26px 16px;border-radius:var(--r-lg);background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--bdr);cursor:pointer;transition:all .25s;text-align:center;user-select:none;}
+.mc:hover{border-color:var(--bdr2);background:rgba(255,255,255,.05);}
+.mc.on{border-color:var(--accent);background:rgba(221,200,176,.1);}
+.mc .mc-ico{font-size:34px;margin-bottom:10px;}
+.mc .mc-ttl{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:5px;}
+.mc .mc-sub{font-size:12px;color:var(--sub);}
+.mc.on .mc-ttl{color:var(--accent);}
+
+/* Question screen */
+.q-wrap{min-height:100vh;display:flex;flex-direction:column;justify-content:center;padding:56px 24px 140px;}
+.q-num{font-size:12px;font-weight:600;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:36px;}
+.q-text{font-size:21px;font-weight:600;line-height:1.55;color:var(--tx);margin-bottom:52px;letter-spacing:-.2px;}
+
+/* Slider */
+.slider-box{margin-bottom:20px;}
+.slider-ends{display:flex;justify-content:space-between;margin-bottom:14px;}
+.slider-ends span{font-size:12px;color:var(--muted);max-width:100px;}
+.slider-ends span:last-child{text-align:right;}
+.range-wrap{position:relative;padding:4px 0 24px;}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:48px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:var(--r-pill);outline:none;cursor:pointer;}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:36px;height:36px;border-radius:50%;background:rgba(221,200,176,.95);cursor:grab;box-shadow:0 2px 18px rgba(0,0,0,.45),0 0 0 4px rgba(221,200,176,.15);transition:box-shadow .2s;margin-top:6px;}
+input[type=range]::-webkit-slider-thumb:active{cursor:grabbing;box-shadow:0 2px 22px rgba(0,0,0,.5),0 0 0 9px rgba(221,200,176,.18);}
+input[type=range]::-moz-range-thumb{width:36px;height:36px;border-radius:50%;background:rgba(221,200,176,.95);cursor:grab;border:none;box-shadow:0 2px 18px rgba(0,0,0,.45);}
+.range-dots{display:flex;justify-content:space-around;padding:0 18px;position:absolute;bottom:4px;left:0;right:0;}
+.range-dots span{width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.18);}
+.q-val{text-align:center;font-size:13px;font-weight:600;color:var(--sub);margin-top:2px;}
+.q-val-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:0 2px;margin-top:6px;}
+
+/* Result */
+.r-hero{text-align:center;padding:28px 0 20px;}
+.r-hero .big{font-size:54px;margin-bottom:14px;filter:drop-shadow(0 0 20px var(--glow));}
+
+.mbti-card{padding:22px;}
+.mbti-big{font-size:52px;font-weight:900;letter-spacing:-3px;background:linear-gradient(135deg,var(--accent),var(--warm));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.mbti-name{font-size:14px;color:var(--sub);margin-top:4px;margin-bottom:18px;}
+.dim-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.dim-ab{font-size:12px;color:var(--muted);width:22px;flex-shrink:0;}
+.dim-bar{flex:1;height:5px;background:rgba(255,255,255,.07);border-radius:100px;overflow:hidden;}
+.dim-fill{height:100%;background:linear-gradient(90deg,var(--warm),var(--accent));border-radius:100px;transition:width 1.2s cubic-bezier(.4,0,.2,1);}
+.dim-val{font-size:12px;color:var(--sub);width:38px;text-align:right;flex-shrink:0;}
+
+.sec-ttl{font-size:14px;font-weight:700;color:var(--tx);margin:26px 0 12px;display:flex;align-items:center;gap:8px;}
+.sec-ttl::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.06);}
+
+.jcard{background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid var(--bdr);border-radius:var(--r-lg);margin-bottom:14px;overflow:hidden;transition:border-color .2s;}
+.jcard:hover{border-color:rgba(221,200,176,.22);}
+.jhd{padding:18px 18px 14px;display:flex;align-items:flex-start;gap:13px;cursor:pointer;}
+.j-ico{width:48px;height:48px;background:rgba(255,255,255,.07);border:1px solid var(--bdr);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.j-wrap{flex:1;min-width:0;}
+.j-ttl{font-size:16px;font-weight:700;color:var(--tx);margin-bottom:2px;}
+.j-city{font-size:12px;color:var(--warm);font-weight:600;margin-bottom:3px;}
+.j-ind{font-size:12px;color:var(--muted);}
+.j-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:7px;}
+.j-tag{background:rgba(221,200,176,.07);border:1px solid rgba(221,200,176,.15);border-radius:5px;padding:2px 8px;font-size:11px;font-weight:600;color:rgba(221,200,176,.7);}
+.j-sal{font-size:13px;font-weight:800;color:var(--accent);white-space:nowrap;padding-top:2px;}
+
+.jtabs{display:flex;border-top:1px solid var(--bdr);padding:0 18px;}
+.jtab{flex:1;background:none;border:none;border-bottom:2px solid transparent;padding:11px 0;font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;letter-spacing:.3px;transition:all .2s;}
+.jtab.on{color:var(--accent);border-bottom-color:var(--accent);}
+
+.jbd{padding:18px;display:none;}
+.jbd.open{display:block;}
+
+/* Req list */
+.req-list{list-style:none;margin-top:6px;}
+.req-list li{font-size:13px;color:var(--sub);line-height:1.65;padding:6px 0;display:flex;align-items:flex-start;gap:7px;border-bottom:1px solid rgba(255,255,255,.04);}
+.req-list li:last-child{border:none;}
+.req-list li::before{content:'▸';color:var(--warm);flex-shrink:0;margin-top:1px;}
+
+.edu-row{display:flex;gap:7px;margin-bottom:14px;}
+.ebadge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.04);border-radius:8px;padding:5px 10px;font-size:12px;color:var(--sub);}
+.ebadge strong{color:var(--tx);font-weight:600;}
+
+/* Resume template */
+.resume-tpl{background:rgba(255,255,255,.03);border:1px solid var(--bdr);border-radius:var(--r-md);padding:18px;font-size:13px;line-height:1.8;color:var(--sub);}
+.resume-tpl .r-name{font-size:18px;font-weight:800;color:var(--tx);margin-bottom:3px;}
+.resume-tpl .r-contact{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.resume-tpl .r-sec{margin-top:14px;}
+.resume-tpl .r-sec-ttl{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--warm);border-bottom:1px solid rgba(255,255,255,.06);padding-bottom:5px;margin-bottom:8px;}
+.resume-tpl .r-item{margin-bottom:10px;}
+.resume-tpl .r-item-hd{display:flex;justify-content:space-between;font-size:14px;font-weight:700;color:var(--tx);}
+.resume-tpl .r-item-sub{font-size:12px;color:var(--muted);margin-bottom:4px;}
+.resume-tpl ul{padding-left:16px;}
+.resume-tpl ul li{font-size:13px;color:var(--sub);line-height:1.7;}
+
+/* Career path */
+.cpath{position:relative;padding-left:26px;}
+.cpath::before{content:'';position:absolute;left:9px;top:8px;bottom:8px;width:2px;background:linear-gradient(to bottom,var(--warm),rgba(255,255,255,.04));border-radius:2px;}
+.cnode{position:relative;margin-bottom:22px;}
+.cnode::before{content:'';position:absolute;left:-21px;top:6px;width:8px;height:8px;border-radius:50%;background:var(--warm);border:2px solid rgba(26,14,10,1);}
+.cnode:last-child::before{background:var(--accent);box-shadow:0 0 10px var(--glow);}
+.cn-yr{font-size:11px;color:var(--muted);margin-bottom:3px;}
+.cn-role{font-size:15px;font-weight:700;color:var(--tx);}
+.cn-sal{font-size:12px;color:var(--warm);margin-top:2px;}
+.cn-desc{font-size:13px;color:var(--sub);line-height:1.6;margin-top:5px;}
+
+/* Resume match */
+.rmatch-area{width:100%;background:rgba(255,255,255,.04);border:1px dashed rgba(255,255,255,.14);border-radius:var(--r-md);padding:14px 16px;font-size:13px;color:var(--tx);font-family:inherit;outline:none;resize:vertical;min-height:110px;transition:border-color .2s;}
+.rmatch-area:focus{border-color:rgba(221,200,176,.3);}
+.rmatch-area::placeholder{color:var(--muted);}
+.match-res{margin-top:14px;padding:16px;border-radius:var(--r-md);background:rgba(192,128,96,.1);border:1px solid rgba(192,128,96,.25);display:none;}
+.match-res.show{display:block;}
+.match-pct{font-size:34px;font-weight:900;color:var(--accent);}
+.match-sub{font-size:13px;color:var(--sub);margin-top:3px;margin-bottom:12px;}
+.match-item{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:13px;}
+.match-item:last-child{border:none;}
+.match-item .mk{color:var(--sub);}
+.hit{color:#7dcea0;font-weight:700;}
+.miss{color:#e08080;font-weight:700;}
+
+/* Misc */
+.divider{height:1px;background:var(--bdr);margin:20px 0;}
+.tags{display:flex;flex-wrap:wrap;gap:6px;}
+.tagc{background:rgba(255,255,255,.06);border:1px solid var(--bdr);border-radius:var(--r-pill);padding:4px 12px;font-size:12px;color:var(--sub);}
+.hint{font-size:11px;color:var(--muted);text-align:center;padding:9px 0 6px;}
+.fit-badge{display:inline-flex;align-items:center;gap:4px;background:rgba(125,206,160,.1);border:1px solid rgba(125,206,160,.22);border-radius:var(--r-pill);padding:3px 10px;font-size:11px;font-weight:700;color:#7dcea0;}
+.info-block{padding:16px 18px;}
+.info-row{display:flex;align-items:flex-start;gap:8px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:14px;}
+.info-row:last-child{border:none;}
+.ir-key{color:var(--muted);flex:0 0 80px;}
+.ir-val{color:var(--tx);font-weight:500;flex:1;}
+.stmt-box{background:linear-gradient(135deg,rgba(192,128,96,.1),rgba(221,200,176,.06));border:1px solid rgba(221,200,176,.18);border-radius:var(--r-lg);padding:20px;margin:16px 0;position:relative;overflow:hidden;}
+.stmt-box::before{content:'"';position:absolute;top:-10px;left:12px;font-size:88px;color:rgba(221,200,176,.07);font-family:Georgia,serif;line-height:1;}
+.stmt-box p{font-size:15px;font-weight:500;color:var(--tx);line-height:1.8;position:relative;}
+.foot{font-size:12px;color:rgba(255,255,255,.2);text-align:center;line-height:1.9;margin:20px 0 10px;}
+
+/* Orbit badge */
+.orbit-badge{position:relative;width:110px;height:110px;display:flex;align-items:center;justify-content:center;}
+.orbit-ring{position:absolute;border-radius:50%;border:1px solid rgba(221,200,176,.18);}
+.orbit-ring1{width:110px;height:110px;animation:spin1 6s linear infinite;}
+.orbit-ring2{width:72px;height:72px;animation:spin2 4s linear infinite reverse;}
+.orbit-dot{position:absolute;width:6px;height:6px;background:var(--accent);border-radius:50%;top:-3px;left:50%;transform:translateX(-50%);box-shadow:0 0 8px var(--glow);}
+.orbit-core{width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,var(--warm),var(--accent));box-shadow:0 0 22px var(--glow);position:relative;z-index:2;}
+@keyframes spin1{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+@keyframes spin2{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+<div class="bg"></div><div class="bg-mist"></div>
+<div class="app">
+<div class="pgbar"><div class="pgfill" id="pg"></div></div>
+
+<!-- S0: 欢迎 -->
+<div class="screen active" id="s0">
+  <!-- Orbit badge -->
+  <div style="display:flex;justify-content:center;margin:32px 0 36px;perspective:400px;">
+    <div class="orbit-badge">
+      <div class="orbit-ring orbit-ring1"><div class="orbit-dot"></div></div>
+      <div class="orbit-ring orbit-ring2"><div class="orbit-dot"></div></div>
+      <div class="orbit-core"></div>
+    </div>
+  </div>
+
+  <!-- Wordmark -->
+  <div style="text-align:center;margin-bottom:10px;">
+    <div style="font-size:52px;font-weight:200;letter-spacing:18px;color:var(--tx);line-height:1;padding-left:18px;">寻途</div>
+    <div style="font-size:12px;font-weight:300;letter-spacing:6px;text-transform:uppercase;color:var(--muted);margin-top:10px;padding-left:6px;">Find Your Way</div>
+  </div>
+
+  <!-- Feature tags -->
+  <div style="display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin:28px 0 36px;">
+    <span style="background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:var(--r-pill);padding:6px 14px;font-size:12px;color:var(--sub);letter-spacing:.5px;">MBTI 人格分析</span>
+    <span style="background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:var(--r-pill);padding:6px 14px;font-size:12px;color:var(--sub);letter-spacing:.5px;">职业精准匹配</span>
+    <span style="background:rgba(255,255,255,.05);border:1px solid var(--bdr);border-radius:var(--r-pill);padding:6px 14px;font-size:12px;color:var(--sub);letter-spacing:.5px;">简历 · 职业路径</span>
+  </div>
+
+  <!-- Mode selection -->
+  <div class="glass" style="padding:20px 18px;margin-bottom:28px;">
+    <div class="lbl" style="margin-bottom:14px;">选择测试模式</div>
+    <div class="mode-grid">
+      <div class="mc on" id="mc-simple" onclick="setMode('simple')">
+        <div class="mc-ico">⚡</div>
+        <div class="mc-ttl">Simple</div>
+        <div class="mc-sub">50道题 · 约15分钟</div>
+      </div>
+      <div class="mc" id="mc-deep" onclick="setMode('deep')">
+        <div class="mc-ico">🔭</div>
+        <div class="mc-ttl">Deep</div>
+        <div class="mc-sub">100道题 · 约30分钟</div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:var(--muted);text-align:center;margin-top:4px;">题目基于 MBTI 十六型人格视角设计<br>答案无对错，跟着直觉走</p>
+  </div>
+  <div class="bot"><button class="btn" onclick="go(1)">开始探索 →</button></div>
+</div>
+
+<!-- S1: 个人档案 -->
+<div class="screen" id="s1">
+  <div class="lbl" style="margin-bottom:8px;">个人档案</div>
+  <h2 style="margin-bottom:6px;">先让我认识你</h2>
+  <p class="sub" style="margin-bottom:28px;">这些信息会参与题目设计和最终职业推荐</p>
+
+  <div class="glass" style="padding:18px;margin-bottom:14px;">
+    <div class="lbl" style="margin-bottom:14px;">基本信息</div>
+    <div class="fsec"><label class="lbl">你的名字</label><input class="fi" id="pName" placeholder="昵称也可以" type="text"></div>
+    <div class="fsec"><label class="lbl">年龄</label>
+      <select class="fi" id="pAge"><option value="">请选择</option><option value="18-22">18-22岁</option><option value="23-25">23-25岁</option><option value="26-30">26-30岁</option><option value="31-35">31-35岁</option><option value="36-40">36-40岁</option><option value="40+">40岁以上</option></select>
+    </div>
+    <div class="fsec"><label class="lbl">性别</label>
+      <div class="chips">
+        <div class="chip" onclick="setSingle(this,'pGender','男')">男</div>
+        <div class="chip" onclick="setSingle(this,'pGender','女')">女</div>
+        <div class="chip" onclick="setSingle(this,'pGender','不透露')">不透露</div>
+      </div><input type="hidden" id="pGender">
+    </div>
+  </div>
+
+  <div class="glass" style="padding:18px;margin-bottom:14px;">
+    <div class="lbl" style="margin-bottom:14px;">人格与星座</div>
+    <div class="fsec"><label class="lbl">你的 MBTI（不知道可跳过）</label>
+      <select class="fi" id="pMBTI">
+        <option value="">未测试 / 不清楚</option>
+        <option value="INTJ">INTJ — 建筑师</option><option value="INTP">INTP — 逻辑学家</option>
+        <option value="ENTJ">ENTJ — 指挥官</option><option value="ENTP">ENTP — 辩论家</option>
+        <option value="INFJ">INFJ — 提倡者</option><option value="INFP">INFP — 调停者</option>
+        <option value="ENFJ">ENFJ — 主人公</option><option value="ENFP">ENFP — 竞选者</option>
+        <option value="ISTJ">ISTJ — 物流师</option><option value="ISFJ">ISFJ — 守卫者</option>
+        <option value="ESTJ">ESTJ — 总经理</option><option value="ESFJ">ESFJ — 执政官</option>
+        <option value="ISTP">ISTP — 鉴赏家</option><option value="ISFP">ISFP — 探险家</option>
+        <option value="ESTP">ESTP — 企业家</option><option value="ESFP">ESFP — 表演者</option>
+      </select>
+    </div>
+    <div class="fsec"><label class="lbl">星座</label>
+      <div class="chips">
+        <div class="chip" onclick="setSingle(this,'pZodiac','白羊座')">♈白羊</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','金牛座')">♉金牛</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','双子座')">♊双子</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','巨蟹座')">♋巨蟹</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','狮子座')">♌狮子</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','处女座')">♍处女</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','天秤座')">♎天秤</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','天蝎座')">♏天蝎</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','射手座')">♐射手</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','摩羯座')">♑摩羯</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','水瓶座')">♒水瓶</div>
+        <div class="chip" onclick="setSingle(this,'pZodiac','双鱼座')">♓双鱼</div>
+      </div><input type="hidden" id="pZodiac">
+    </div>
+  </div>
+
+  <div class="glass" style="padding:18px;margin-bottom:14px;">
+    <div class="lbl" style="margin-bottom:14px;">职业背景</div>
+    <div class="fsec"><label class="lbl">最高学历</label>
+      <select class="fi" id="pEdu"><option value="">请选择</option><option value="高中/中专">高中/中专</option><option value="大专">大专</option><option value="本科">本科</option><option value="硕士">硕士</option><option value="博士">博士</option></select>
+    </div>
+    <div class="fsec"><label class="lbl">工作年限</label>
+      <select class="fi" id="pYears"><option value="">请选择</option><option value="0">0年（在校/应届）</option><option value="1-2">1-2年</option><option value="3-5">3-5年</option><option value="5-10">5-10年</option><option value="10+">10年以上</option></select>
+    </div>
+    <div class="fsec"><label class="lbl">目前/最近职位</label><input class="fi" id="pJob" placeholder="如：市场专员、教师、销售..." type="text"></div>
+  </div>
+
+  <div class="glass" style="padding:18px;margin-bottom:14px;">
+    <div class="lbl" style="margin-bottom:14px;">地域偏好</div>
+    <div class="fsec"><label class="lbl">目前工作城市</label><input class="fi" id="pCity" placeholder="如：上海、深圳、成都..." type="text"></div>
+    <div class="fsec"><label class="lbl">喜欢的气候</label>
+      <div class="chips">
+        <div class="chip" onclick="setSingle(this,'pClimate','热带炎热')">🌴 热带/炎热</div>
+        <div class="chip" onclick="setSingle(this,'pClimate','温暖湿润')">🌸 温暖湿润</div>
+        <div class="chip" onclick="setSingle(this,'pClimate','四季分明')">🍁 四季分明</div>
+        <div class="chip" onclick="setSingle(this,'pClimate','凉爽干燥')">🌬️ 凉爽干燥</div>
+      </div><input type="hidden" id="pClimate">
+    </div>
+    <div class="fsec"><label class="lbl">向往的城市（可多选）</label>
+      <div class="chips" id="cityChips">
+        <div class="chip" onclick="toggleCity(this,'北京')">北京</div>
+        <div class="chip" onclick="toggleCity(this,'上海')">上海</div>
+        <div class="chip" onclick="toggleCity(this,'深圳')">深圳</div>
+        <div class="chip" onclick="toggleCity(this,'广州')">广州</div>
+        <div class="chip" onclick="toggleCity(this,'杭州')">杭州</div>
+        <div class="chip" onclick="toggleCity(this,'成都')">成都</div>
+        <div class="chip" onclick="toggleCity(this,'武汉')">武汉</div>
+        <div class="chip" onclick="toggleCity(this,'南京')">南京</div>
+        <div class="chip" onclick="toggleCity(this,'厦门')">厦门</div>
+        <div class="chip" onclick="toggleCity(this,'青岛')">青岛</div>
+        <div class="chip" onclick="toggleCity(this,'昆明')">昆明</div>
+        <div class="chip" onclick="toggleCity(this,'西安')">西安</div>
+        <div class="chip" onclick="toggleCity(this,'海口')">海口</div>
+        <div class="chip" onclick="toggleCity(this,'不限')">不限城市</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bot"><button class="btn" onclick="startTest()">进入测试 →</button></div>
+</div>
+
+<!-- S2: 测试题 -->
+<div class="screen" id="s2">
+  <div class="q-wrap">
+    <div class="q-num" id="qNum">Q 1 / 50</div>
+    <div class="q-text" id="qText"></div>
+    <div class="slider-box">
+      <div class="slider-ends">
+        <span>完全不认同</span>
+        <span>完全认同</span>
+      </div>
+      <div class="range-wrap">
+        <input type="range" id="qSlider" min="1" max="7" value="4" oninput="onSlide(this)">
+        <div class="range-dots" id="rangeDots">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+      <div class="q-val" id="qVal">中立</div>
+    </div>
+  </div>
+  <div class="bot" style="flex-direction:row;gap:10px;">
+    <button class="btn-ghost" id="qBack" onclick="prevQ()" style="width:80px;flex-shrink:0;">←</button>
+    <button class="btn" id="qNext" onclick="nextQ()">下一题 →</button>
+  </div>
+</div>
+
+<!-- S3: 结果 -->
+<div class="screen" id="s3">
+  <div class="r-hero">
+    <div class="big">✨</div>
+    <h2>你的职业画像</h2>
+    <p class="sub" style="margin-top:6px;">基于测试结果 · 结合你的背景与偏好</p>
+  </div>
+
+  <!-- MBTI result -->
+  <div class="glass mbti-card" id="mbtiCard" style="margin-bottom:14px;"></div>
+
+  <!-- Statement -->
+  <div class="stmt-box"><p id="stmt"></p></div>
+
+  <!-- Tags -->
+  <div class="glass" style="padding:16px 18px;margin-bottom:14px;">
+    <div class="lbl" style="margin-bottom:10px;">你的核心特质</div>
+    <div class="tags" id="rTags"></div>
+  </div>
+
+  <!-- Jobs -->
+  <div class="sec-ttl">🎯 为你匹配的职业方向</div>
+  <p class="sub" style="margin-bottom:16px;font-size:13px;">点击每个职业，查看详情 · 简历模板 · 职业路径</p>
+  <div id="jobList"></div>
+
+  <p class="foot">职业要求参考真实招聘市场 · 这是起点，不是终点<br>根据你的城市偏好推荐了最适合的发展城市</p>
+  <button class="btn-ghost" onclick="restart()" style="margin-bottom:50px;">↺ 重新测试</button>
+</div>
+
+</div><!-- .app -->
+
+<script>
+// ── State ──────────────────────────────────────────────────────────────────
+let mode='simple';
+let profile={name:'',age:'',gender:'',mbti:'',zodiac:'',edu:'',years:'',job:'',city:'',climate:'',cities:[]};
+let answers=[];
+let curQ=0;
+let totalQ=50;
+const PROG_STEPS=[0,20,45,100];
+let resultCalc=null;
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+function go(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('s'+n).classList.add('active');
+  document.getElementById('pg').style.width=PROG_STEPS[n]+'%';
+  window.scrollTo(0,0);
+}
+
+function setMode(m){
+  mode=m;
+  document.getElementById('mc-simple').classList.toggle('on',m==='simple');
+  document.getElementById('mc-deep').classList.toggle('on',m==='deep');
+}
+
+function setSingle(el,id,val){
+  el.closest('.fsec,div').querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById(id).value=val;
+}
+
+let selCities=[];
+function toggleCity(el,city){
+  if(city==='不限'){
+    selCities=['不限'];
+    document.querySelectorAll('#cityChips .chip').forEach(c=>c.classList.remove('on'));
+    el.classList.add('on');
+    return;
+  }
+  const idx=selCities.indexOf('不限');
+  if(idx>-1){selCities.splice(idx,1);document.querySelectorAll('#cityChips .chip').forEach(c=>{ if(c.textContent==='不限城市')c.classList.remove('on');});}
+  if(el.classList.contains('on')){el.classList.remove('on');selCities=selCities.filter(c=>c!==city);}
+  else{el.classList.add('on');selCities.push(city);}
+}
+
+function startTest(){
+  profile.name=document.getElementById('pName').value||'你';
+  profile.age=document.getElementById('pAge').value;
+  profile.gender=document.getElementById('pGender').value;
+  profile.mbti=document.getElementById('pMBTI').value;
+  profile.zodiac=document.getElementById('pZodiac').value;
+  profile.edu=document.getElementById('pEdu').value;
+  profile.years=document.getElementById('pYears').value;
+  profile.job=document.getElementById('pJob').value;
+  profile.city=document.getElementById('pCity').value;
+  profile.climate=document.getElementById('pClimate').value;
+  profile.cities=selCities.length?[...selCities]:[];
+  totalQ=mode==='deep'?100:50;
+  answers=new Array(totalQ).fill(4);
+  curQ=0;
+  showQ(0);
+  go(2);
+}
+
+// ── Questions ───────────────────────────────────────────────────────────────
+const QS=[
+/* Simple (1-50) */
+/* E/I */
+{q:'社交活动结束后，我通常感到精力充沛、意犹未尽',d:'EI',r:false},
+{q:'一个人待着，是我恢复精力最自然的方式',d:'EI',r:true},
+{q:'我喜欢认识新朋友，主动打开话匣子对我来说不难',d:'EI',r:false},
+{q:'比起大型聚会，我更享受一对一的深度交流',d:'EI',r:true},
+{q:'在小组中，我更倾向于主动发言和引导讨论',d:'EI',r:false},
+{q:'在嘈杂喧闹的环境里，我很难集中精神',d:'EI',r:true},
+/* S/N */
+{q:'我更关注当下具体的事实和细节，而非未来的各种可能性',d:'SN',r:false},
+{q:'我经常思考那些还不存在的概念，畅想未来的宏图',d:'SN',r:true},
+{q:'我信任经过验证的方法，比未经测试的新想法更可靠',d:'SN',r:false},
+{q:'头脑风暴时，我的思路天马行空，很难被框住',d:'SN',r:true},
+{q:'我更擅长处理具体的实际问题，而非抽象理论',d:'SN',r:false},
+{q:'我常常陷入对生命意义和宏大问题的深度思考',d:'SN',r:true},
+/* T/F */
+{q:'做决定时，我主要依靠逻辑分析，而非当下的感受',d:'TF',r:false},
+{q:'在做决定时，相关人的感受对我至关重要',d:'TF',r:true},
+{q:'我认为说出真相比照顾别人的情绪更重要',d:'TF',r:false},
+{q:'见到他人痛苦，我会深深地感同身受',d:'TF',r:true},
+{q:'批评一个想法时，我能把问题本身和提问者分开对待',d:'TF',r:false},
+{q:'发生冲突时，我首先想到的是如何修复关系',d:'TF',r:true},
+/* J/P */
+{q:'我喜欢提前做好计划，而不是随机应变',d:'JP',r:false},
+{q:'我享受灵活性，喜欢根据当下情况随时调整',d:'JP',r:true},
+{q:'完成任务、划掉待办清单让我感到愉悦',d:'JP',r:false},
+{q:'我更喜欢探索和保持开放，不急于得出结论',d:'JP',r:true},
+{q:'明确的期限和清晰的目标让我工作更有劲',d:'JP',r:false},
+{q:'严格的规则和繁琐的程序让我感到束缚',d:'JP',r:true},
+/* 创意/表达 */
+{q:'我经常有想要创作的冲动——写作、绘画、音乐或其他',d:'CR',r:false},
+{q:'通过语言或故事影响他人，让我感到兴奋',d:'EX',r:false},
+{q:'我对美、设计和视觉效果有强烈的个人偏好',d:'CR',r:false},
+{q:'我喜欢将复杂的想法用生动有趣的方式传达给别人',d:'EX',r:false},
+{q:'从零开始创造全新的东西，让我最有成就感',d:'CR',r:false},
+{q:'我享受公开表达自己——无论是演讲、写作还是表演',d:'EX',r:false},
+/* 分析/技术 */
+{q:'钻研数据、寻找规律和隐藏的趋势让我着迷',d:'AN',r:false},
+{q:'弄清楚复杂系统的工作原理让我非常满足',d:'TE',r:false},
+{q:'解决逻辑难题比与人交流更让我享受',d:'AN',r:false},
+{q:'我对最新的科技产品和技术进展很感兴趣',d:'TE',r:false},
+{q:'我更喜欢基于数据做决策，而不是凭直觉',d:'AN',r:false},
+{q:'我享受学习编程或理解技术工具的运作方式',d:'TE',r:false},
+/* 社交/助人 */
+{q:'帮助他人解决问题或实现目标，让我最有价值感',d:'SO',r:false},
+{q:'教导和引导别人，看到他们成长，让我充满能量',d:'SO',r:false},
+{q:'建立深厚的人际关系是我生活中最重要的事之一',d:'SO',r:false},
+{q:'我善于倾听，人们喜欢来找我倾诉',d:'SO',r:false},
+{q:'为群体或社会做出贡献，对我比个人成就更重要',d:'SO',r:false},
+{q:'我能敏锐感受到他人情绪的细微变化',d:'SO',r:false},
+/* 创业/领导 */
+{q:'我喜欢领导一个团队朝共同目标前进',d:'EN',r:false},
+{q:'我对商业机会很敏感，经常有创业的冲动',d:'EN',r:false},
+{q:'我愿意承担风险来追求更大的回报',d:'EN',r:false},
+{q:'我喜欢做决策，不喜欢等别人告诉我该怎么做',d:'EN',r:false},
+{q:'在不确定的情况下，我能保持冷静并找到出路',d:'EN',r:false},
+{q:'说服他人相信我的想法，对我来说是件有趣的事',d:'EN',r:false},
+{q:'我对商业模式、投资和财务增长非常感兴趣',d:'EN',r:false},
+{q:'谈判和争取对自己有利的结果让我感到兴奋',d:'EN',r:false},
+/* Deep only (51-100) */
+/* 更多E/I */
+{q:'在人群中，我很容易成为对话的中心',d:'EI',r:false},
+{q:'我需要大量独处时间来理清自己的想法和情绪',d:'EI',r:true},
+{q:'和来自不同背景的人交流让我充满活力',d:'EI',r:false},
+{q:'我更倾向于通过反思而非讨论来解决问题',d:'EI',r:true},
+/* 更多S/N */
+{q:'我更关心事物的实际应用，而非背后的理论体系',d:'SN',r:false},
+{q:'我的想象力很丰富，经常构建复杂的内心世界',d:'SN',r:true},
+{q:'工作中我更依赖过去积累的经验，而非临场的直觉',d:'SN',r:false},
+{q:'我喜欢探索全新的可能性，即使它们目前还不现实',d:'SN',r:true},
+/* 更多T/F */
+{q:'效率和结果对我来说，比过程是否和谐更重要',d:'TF',r:false},
+{q:'我很容易感受到周围人情绪的细微变化',d:'TF',r:true},
+{q:'我欣赏有逻辑有条理的分析，甚于充满激情的演讲',d:'TF',r:false},
+{q:'帮助他人处理情感困境，让我感到很有价值',d:'TF',r:true},
+/* 更多J/P */
+{q:'我的桌面和文件夹通常保持整洁有序',d:'JP',r:false},
+{q:'我喜欢同时推进多个项目，在不同事情间来回切换',d:'JP',r:true},
+{q:'工作前我会做充分准备，而不是边做边想',d:'JP',r:false},
+{q:'混乱和即兴有时让我感到兴奋，而不是焦虑',d:'JP',r:true},
+/* 工作环境偏好 */
+{q:'我更喜欢在有明确规则和流程的环境中工作',d:'JP',r:false},
+{q:'竞争压力反而能激发出我最好的状态',d:'EN',r:false},
+{q:'工作中的合作和协作比独立完成任务更让我喜欢',d:'SO',r:false},
+{q:'我希望工作内容有多样性，而不是重复相同的任务',d:'SN',r:true},
+{q:'在有意义的事情上工作，比高薪对我更重要',d:'SO',r:false},
+{q:'我希望工作给我足够的自主空间，而不是被紧密监督',d:'EI',r:true},
+/* 自我表达 */
+{q:'我有鲜明的个人风格，喜欢通过外在展现自我',d:'CR',r:false},
+{q:'我善于用比喻和故事让抽象概念变得生动',d:'EX',r:false},
+{q:'我有时感到有一种使命感，想做一些有影响力的事',d:'EN',r:false},
+{q:'摄影、写作、设计或音乐是我表达自我的重要出口',d:'CR',r:false},
+{q:'我对人类心理和行为背后的原因有浓厚兴趣',d:'AN',r:false},
+{q:'我对教育和知识传播有持续的热情',d:'SO',r:false},
+/* 风险与野心 */
+{q:'我愿意放弃稳定，去追求更有激情的职业路径',d:'EN',r:false},
+{q:'对职业发展的掌控感对我非常重要',d:'EN',r:false},
+{q:'我不介意从基层做起，只要方向是对的',d:'JP',r:false},
+{q:'我享受用脑力而非体力来创造价值',d:'AN',r:false},
+{q:'身处压力下，我通常能找到最优解并迅速执行',d:'EN',r:false},
+{q:'我很享受深入研究某一领域，成为这个领域的专家',d:'AN',r:false},
+/* 生活方式 */
+{q:'自然环境和身体健康是我生活质量的重要组成',d:'SO',r:false},
+{q:'旅行和了解不同文化是我人生的重要部分',d:'SN',r:true},
+{q:'我对体育运动或身体训练有持续的热情',d:'CR',r:false},
+{q:'我喜欢研究和实践各种提升效率的方法',d:'TE',r:false},
+/* 职业价值观 */
+{q:'名誉和社会地位是我选择职业的重要考量',d:'EN',r:false},
+{q:'收入和财务自由是我职业目标中最优先的',d:'EN',r:false},
+{q:'我希望自己的工作对世界产生积极影响',d:'SO',r:false},
+{q:'持续学习和个人成长是我选择工作的首要标准',d:'AN',r:false},
+{q:'我希望工作能给我足够的创作自由',d:'CR',r:false},
+{q:'我更倾向于建立自己的事业，而不是为别人工作',d:'EN',r:false},
+{q:'我对工作的稳定性和安全感有较高需求',d:'JP',r:false},
+{q:'我希望工作能让我经常接触来自各行各业的人',d:'EI',r:false},
+{q:'工作中，我在乎做事的方式和美感，而不只是结果',d:'CR',r:false},
+{q:'我愿意投入大量时间钻研一个复杂问题直到彻底理解',d:'AN',r:false},
+];
+
+const VAL_LABELS=['完全不认同','不认同','略不认同','中立','略认同','认同','完全认同'];
+
+function showQ(idx){
+  const q=QS[idx];
+  document.getElementById('qNum').textContent=`Q ${idx+1} / ${totalQ}`;
+  document.getElementById('qText').textContent=q.q;
+  const slider=document.getElementById('qSlider');
+  slider.value=answers[idx];
+  updateSliderUI(slider);
+  document.getElementById('qBack').disabled=idx===0;
+  document.getElementById('qNext').textContent=idx===totalQ-1?'查看我的结果 ✦':'下一题 →';
+}
+
+function onSlide(el){
+  answers[curQ]=parseInt(el.value);
+  updateSliderUI(el);
+}
+
+function updateSliderUI(el){
+  const v=parseInt(el.value);
+  const pct=(v-1)/6*100;
+  el.style.background=`linear-gradient(to right,rgba(221,200,176,0.22) 0%,rgba(221,200,176,0.22) ${pct}%,rgba(255,255,255,0.07) ${pct}%,rgba(255,255,255,0.07) 100%)`;
+  document.getElementById('qVal').textContent=VAL_LABELS[v-1];
+}
+
+function nextQ(){
+  if(curQ<totalQ-1){curQ++;showQ(curQ);}
+  else{buildResult();go(3);}
+}
+function prevQ(){if(curQ>0){curQ--;showQ(curQ);}}
+
+// ── Scoring ─────────────────────────────────────────────────────────────────
+function calcScores(){
+  const dim={EI:0,SN:0,TF:0,JP:0,CR:0,EX:0,AN:0,TE:0,SO:0,EN:0};
+  const cnt={EI:0,SN:0,TF:0,JP:0,CR:0,EX:0,AN:0,TE:0,SO:0,EN:0};
+  for(let i=0;i<totalQ;i++){
+    const q=QS[i];
+    const v=answers[i];
+    const norm=q.r?(8-v):v; // 1-7, higher=positive of that dim
+    dim[q.d]+=norm;
+    cnt[q.d]++;
+  }
+  // Normalize each to 0-100
+  const sc={};
+  for(const k in dim){sc[k]=cnt[k]?Math.round(((dim[k]/cnt[k])-1)/6*100):50;}
+  return sc;
+}
+
+function calcMBTI(sc){
+  const E=sc.EI>=50;
+  const N=sc.SN<50;
+  const T=sc.TF>=50;
+  const J=sc.JP>=50;
+  return (E?'E':'I')+(N?'N':'S')+(T?'T':'F')+(J?'J':'P');
+}
+
+// ── Jobs ──────────────────────────────────────────────────────────────────
+const JOBS=[
+{icon:'🛒',title:'电商产品经理',ind:'互联网·电商',sal:'20k-40k/月',edu:'本科',expYears:3,
+ tags:['PRD文档','需求分析','数据分析','项目管理'],
+ reqs:['本科及以上，计算机/商科/电商相关专业','3年以上互联网产品经验','能独立撰写PRD并用Axure/Figma做原型','熟悉电商全链路：商品/购物车/支付/售后','掌握SQL/Excel基础数据分析','跨团队沟通与敏捷项目管理能力'],
+ baseCities:['上海','杭州','深圳','北京'],
+ mbtiMatch:['INTJ','ENTJ','INTP','ENTP','INFJ'],
+ zodiacBoost:['处女座','摩羯座','天蝎座','水瓶座'],
+ dims:{EI:0,SN:-1,TF:1,JP:1},
+ interests:['AN','TE','EN'],
+ careerPath:[
+   {yr:'0-2年',role:'初级产品经理',sal:'10k-18k',desc:'跟进产品迭代，学习写PRD，辅助需求分析'},
+   {yr:'3-5年',role:'产品经理',sal:'18k-30k',desc:'独立负责产品模块，主导需求评审和版本规划'},
+   {yr:'5-8年',role:'高级产品经理/产品专家',sal:'30k-50k',desc:'负责核心产品线，跨团队协作，建立方法论'},
+   {yr:'8-12年',role:'产品总监/VP',sal:'50k-100k',desc:'统筹产品战略，带领产品团队，影响公司方向'},
+   {yr:'天花板',role:'CPO/创业',sal:'150k+',desc:'首席产品官或自立门户创业'},
+ ]},
+{icon:'🖥️',title:'UI/UX 设计师',ind:'互联网·产品设计',sal:'15k-35k/月',edu:'本科',expYears:2,
+ tags:['Figma','交互设计','视觉规范','用户测试'],
+ reqs:['设计/艺术/HCI相关本科','2年以上UI/UX经验，需完整作品集','熟练使用Figma/Sketch','具备可用性测试和用户访谈基本能力','了解iOS/Android设计规范','有完整从0到1项目经历'],
+ baseCities:['上海','北京','深圳','杭州'],
+ mbtiMatch:['INFP','INFJ','ENFP','ISFP','INTP'],
+ zodiacBoost:['天秤座','双鱼座','水瓶座','金牛座'],
+ dims:{EI:0,SN:-1,TF:-1,JP:0},
+ interests:['CR','AN','TE'],
+ careerPath:[
+   {yr:'0-2年',role:'初级UI/UX设计师',sal:'8k-15k',desc:'执行设计稿，临摹学习，积累作品集'},
+   {yr:'3-5年',role:'UI/UX设计师',sal:'15k-25k',desc:'独立负责完整产品界面，参与用户研究'},
+   {yr:'5-8年',role:'高级/资深设计师',sal:'25k-45k',desc:'建立设计规范，引导设计方向，带新人'},
+   {yr:'8-12年',role:'设计总监/设计负责人',sal:'45k-80k',desc:'统筹设计团队，制定品牌与产品视觉语言'},
+   {yr:'天花板',role:'CDO/独立设计顾问',sal:'100k+',desc:'首席设计官或创办设计工作室'},
+ ]},
+{icon:'📊',title:'数据分析师',ind:'互联网/金融·数据',sal:'18k-38k/月',edu:'本科',expYears:1,
+ tags:['SQL','Python/R','数据可视化','业务洞察'],
+ reqs:['统计学/数学/计算机/经济相关本科','熟练SQL多表查询','掌握Python或R进行分析建模','能用Tableau/PowerBI制作数据看板','较强业务理解力，能将数据转为行动建议'],
+ baseCities:['北京','上海','深圳','杭州'],
+ mbtiMatch:['INTJ','INTP','ISTJ','ENTJ','INFJ'],
+ zodiacBoost:['处女座','摩羯座','天蝎座','双子座'],
+ dims:{EI:-1,SN:0,TF:1,JP:1},
+ interests:['AN','TE'],
+ careerPath:[
+   {yr:'0-2年',role:'初级数据分析师',sal:'8k-16k',desc:'数据清洗、基础报表、执行分析任务'},
+   {yr:'3-5年',role:'数据分析师',sal:'16k-28k',desc:'独立完成业务分析项目，产出洞察报告'},
+   {yr:'5-8年',role:'高级分析师/数据科学家',sal:'28k-50k',desc:'建立分析框架，机器学习建模，驱动业务决策'},
+   {yr:'8-12年',role:'数据负责人/首席分析师',sal:'50k-90k',desc:'统筹数据团队，制定数据策略'},
+   {yr:'天花板',role:'CDO/数据总监',sal:'100k+',desc:'首席数据官，主导公司数据战略'},
+ ]},
+{icon:'⚡',title:'前端开发工程师',ind:'互联网·技术研发',sal:'20k-45k/月',edu:'本科',expYears:2,
+ tags:['React/Vue','TypeScript','工程化','性能优化'],
+ reqs:['计算机相关本科','精通HTML/CSS/JavaScript，熟练React或Vue','掌握TypeScript及Webpack/Vite工程化工具','有移动端H5或小程序开发经验','能独立承接需求，参与代码review'],
+ baseCities:['北京','上海','深圳','杭州'],
+ mbtiMatch:['INTP','INTJ','ISTP','ENTP','INFP'],
+ zodiacBoost:['水瓶座','摩羯座','双子座','处女座'],
+ dims:{EI:-1,SN:0,TF:1,JP:1},
+ interests:['TE','AN','CR'],
+ careerPath:[
+   {yr:'0-2年',role:'初级前端工程师',sal:'10k-20k',desc:'完成需求开发，学习框架与工程化'},
+   {yr:'3-5年',role:'前端工程师',sal:'20k-35k',desc:'独立承接复杂需求，主导技术方案'},
+   {yr:'5-8年',role:'高级/资深前端',sal:'35k-60k',desc:'架构设计，性能优化，技术攻关'},
+   {yr:'8-12年',role:'前端技术专家/Leader',sal:'60k-100k',desc:'技术团队管理，技术战略规划'},
+   {yr:'天花板',role:'CTO/技术合伙人',sal:'150k+',desc:'首席技术官或技术创业'},
+ ]},
+{icon:'✨',title:'品牌视觉设计师',ind:'广告/品牌·视觉',sal:'12k-25k/月',edu:'本科',expYears:2,
+ tags:['VI设计','Adobe全套','品牌策略','创意概念'],
+ reqs:['设计相关本科','2年以上品牌/广告公司视觉设计经验','精通Adobe PS/AI/ID全套','能独立完成VI规范及品牌物料','有创意概念提案能力'],
+ baseCities:['上海','北京','广州','深圳'],
+ mbtiMatch:['INFP','ISFP','ENFP','INFJ','ENTP'],
+ zodiacBoost:['天秤座','金牛座','双鱼座','狮子座'],
+ dims:{EI:0,SN:-1,TF:-1,JP:0},
+ interests:['CR','EX'],
+ careerPath:[
+   {yr:'0-2年',role:'视觉设计师',sal:'7k-14k',desc:'执行品牌物料，积累视觉作品集'},
+   {yr:'3-5年',role:'高级视觉设计师',sal:'14k-22k',desc:'独立负责品牌项目，参与提案'},
+   {yr:'5-8年',role:'创意总监助理/资深设计师',sal:'22k-38k',desc:'主导品牌策略，管理创意方向'},
+   {yr:'8-12年',role:'创意总监',sal:'38k-70k',desc:'统筹创意团队，服务大客户'},
+   {yr:'天花板',role:'ECD/创办工作室',sal:'100k+',desc:'执行创意总监或独立创意品牌'},
+ ]},
+{icon:'📱',title:'新媒体内容创作者',ind:'新媒体·内容创业',sal:'视变现规模·无上限',edu:'不限',expYears:0,
+ tags:['账号运营','内容策划','视频剪辑','商业变现'],
+ reqs:['无硬性学历，执行力与内容感知力更关键','能持续输出垂直领域内容','了解抖音/小红书/B站算法逻辑','掌握基础拍摄与剪辑技能','有明确内容定位与变现规划'],
+ baseCities:['上海','北京','深圳','成都','杭州'],
+ mbtiMatch:['ENFP','ESFP','ENTP','ENFJ','INFP'],
+ zodiacBoost:['狮子座','射手座','双子座','白羊座'],
+ dims:{EI:1,SN:-1,TF:-1,JP:-1},
+ interests:['CR','EX','EN'],
+ careerPath:[
+   {yr:'0-6个月',role:'内容新人',sal:'0-3k',desc:'建立账号，测试内容形式，积累初始粉丝'},
+   {yr:'6月-2年',role:'垂直领域创作者',sal:'3k-15k',desc:'稳定更新，粉丝增长，接到首批商单'},
+   {yr:'2-5年',role:'头部创作者/IP',sal:'15k-80k',desc:'粉丝超过50万，多平台分发，矩阵运营'},
+   {yr:'5年+',role:'自媒体品牌主/MCN合伙人',sal:'80k-500k',desc:'建立内容团队，孵化矩阵账号，品牌代言'},
+   {yr:'天花板',role:'个人IP品牌化',sal:'无上限',desc:'创办个人品牌/公司，知识付费/电商/版权多元变现'},
+ ]},
+{icon:'✍️',title:'品牌文案策划',ind:'广告/品牌·创意',sal:'12k-25k/月',edu:'本科',expYears:2,
+ tags:['创意文案','campaign策划','品牌故事','social内容'],
+ reqs:['汉语言/新闻/广告相关本科','2年以上品牌/广告公司文案经验','能独立完成campaign创意概念及文案','熟悉各主流社媒平台内容生态','能从用户洞察中提炼核心传播点'],
+ baseCities:['上海','北京','广州','深圳'],
+ mbtiMatch:['ENFP','INFP','INFJ','ENFJ','ENTP'],
+ zodiacBoost:['双子座','天秤座','射手座','水瓶座'],
+ dims:{EI:0,SN:-1,TF:-1,JP:0},
+ interests:['EX','CR','SO'],
+ careerPath:[
+   {yr:'0-2年',role:'文案',sal:'6k-12k',desc:'撰写各类文案，学习品牌策略基础'},
+   {yr:'3-5年',role:'资深文案/文案策划',sal:'12k-20k',desc:'独立完成campaign创意，提案客户'},
+   {yr:'5-8年',role:'创意总监助理/策略总监',sal:'20k-40k',desc:'主导品牌传播策略，管理创意团队'},
+   {yr:'8-12年',role:'创意总监/ECD',sal:'40k-80k',desc:'统筹创意方向，赢得大型广告比稿'},
+   {yr:'天花板',role:'创意合伙人/创办广告公司',sal:'100k+',desc:'独立广告公司合伙人'},
+ ]},
+{icon:'🧠',title:'心理咨询师',ind:'心理健康·咨询服务',sal:'8k-30k/月',edu:'本科',expYears:0,
+ tags:['CBT/人本','国家证书','督导体系','个案小时'],
+ reqs:['心理学相关本科及以上（硕士优先）','持有国家心理咨询师二级/三级证书','完成200学时以上规范咨询培训','积累50小时以上个案（含督导）','了解CBT/人本/精神动力主要流派'],
+ baseCities:['北京','上海','广州','深圳','杭州'],
+ mbtiMatch:['INFJ','INFP','ENFJ','ISFJ','ISFP'],
+ zodiacBoost:['巨蟹座','双鱼座','天蝎座','天秤座'],
+ dims:{EI:-1,SN:-1,TF:-1,JP:0},
+ interests:['SO','AN'],
+ careerPath:[
+   {yr:'0-3年',role:'见习咨询师',sal:'3k-8k',desc:'在督导下接案，积累个案小时，持续学习'},
+   {yr:'3-6年',role:'执业咨询师',sal:'8k-18k',desc:'独立执业，建立稳定来访，形成流派方向'},
+   {yr:'6-10年',role:'资深咨询师',sal:'18k-35k',desc:'高收费私人执业，开始培训新咨询师'},
+   {yr:'10年+',role:'督导/培训师',sal:'35k-80k',desc:'督导新人，开设工作坊，出版专业书籍'},
+   {yr:'天花板',role:'咨询机构创始人',sal:'100k+',desc:'创办心理咨询机构或在线心理健康平台'},
+ ]},
+{icon:'🔭',title:'用户研究员（UXR）',ind:'互联网·用户体验',sal:'18k-35k/月',edu:'本科',expYears:2,
+ tags:['用户访谈','可用性测试','定量调研','研究报告'],
+ reqs:['心理学/社会学/传播学/HCI相关本科','2年以上用户研究工作经验','能独立设计用户访谈/可用性测试/问卷','掌握定性与定量研究方法','有将洞察转化为产品优化建议的案例'],
+ baseCities:['北京','上海','深圳','杭州'],
+ mbtiMatch:['INFJ','INTJ','INFP','INTP','ENFJ'],
+ zodiacBoost:['处女座','天蝎座','摩羯座','双鱼座'],
+ dims:{EI:-1,SN:0,TF:0,JP:1},
+ interests:['AN','SO'],
+ careerPath:[
+   {yr:'0-2年',role:'初级用户研究员',sal:'10k-18k',desc:'执行调研任务，撰写研究报告，学习方法论'},
+   {yr:'3-5年',role:'用户研究员',sal:'18k-28k',desc:'独立承担研究项目，影响产品决策'},
+   {yr:'5-8年',role:'高级/资深研究员',sal:'28k-45k',desc:'建立研究体系，制定研究策略'},
+   {yr:'8-12年',role:'用户研究总监',sal:'45k-80k',desc:'统筹研究团队，为公司战略提供洞察'},
+   {yr:'天花板',role:'体验战略VP',sal:'100k+',desc:'负责公司整体用户体验战略'},
+ ]},
+{icon:'🏢',title:'管理咨询顾问',ind:'咨询行业·战略管理',sal:'20k-60k/月',edu:'本科',expYears:0,
+ tags:['战略分析','商业建模','PPT汇报','行业研究'],
+ reqs:['985/211高校本科及以上，商科/理工科背景','极强逻辑思维和结构化分析问题能力','熟练PowerPoint/Excel进行分析呈现','英语流利（MBB项目需英文产出）','有咨询实习/商业竞赛经历为关键加分'],
+ baseCities:['北京','上海','深圳','广州'],
+ mbtiMatch:['ENTJ','INTJ','ENTP','INTP','ENFJ'],
+ zodiacBoost:['摩羯座','天蝎座','白羊座','狮子座'],
+ dims:{EI:0,SN:-1,TF:1,JP:1},
+ interests:['AN','EN','EX'],
+ careerPath:[
+   {yr:'0-2年',role:'分析师（Analyst）',sal:'12k-22k',desc:'执行研究与建模，制作幻灯片，高强度学习'},
+   {yr:'3-5年',role:'咨询顾问（Consultant）',sal:'22k-40k',desc:'独立模块负责人，客户沟通，项目交付'},
+   {yr:'5-8年',role:'项目经理（Manager）',sal:'40k-65k',desc:'管理项目团队，客户关系维护，业务拓展'},
+   {yr:'8-12年',role:'合伙人候选（Principal）',sal:'65k-120k',desc:'开拓新客户，影响公司战略方向'},
+   {yr:'天花板',role:'合伙人（Partner）',sal:'200k+',desc:'公司合伙人，拥有股份，影响行业'},
+ ]},
+{icon:'🤝',title:'商务拓展BD经理',ind:'互联网/企业服务·商务',sal:'15k-35k+绩效',edu:'本科',expYears:2,
+ tags:['渠道拓展','商务谈判','合作资源','KPI达成'],
+ reqs:['本科及以上，市场营销/商务相关','2年以上BD/商务/销售工作经验','行业内积累的客户或渠道资源','出色的商务谈判和跨组织协调能力','目标导向，能承受业绩压力'],
+ baseCities:['北京','上海','深圳','广州','成都'],
+ mbtiMatch:['ENTJ','ENFJ','ESTP','ENTP','ESFJ'],
+ zodiacBoost:['狮子座','白羊座','射手座','天蝎座'],
+ dims:{EI:1,SN:0,TF:1,JP:1},
+ interests:['EN','SO','EX'],
+ careerPath:[
+   {yr:'0-2年',role:'BD专员/销售代表',sal:'8k-15k+提成',desc:'陌拜开发，积累客户资源，学习谈判技巧'},
+   {yr:'3-5年',role:'BD经理',sal:'15k-30k+提成',desc:'独立拿下大客户，维护重要合作关系'},
+   {yr:'5-8年',role:'高级BD/区域负责人',sal:'30k-55k',desc:'管理BD团队，制定渠道策略'},
+   {yr:'8-12年',role:'商务总监',sal:'55k-100k',desc:'负责公司整体商务拓展战略'},
+   {yr:'天花板',role:'CSO/合伙人',sal:'150k+',desc:'首席战略官或商务合伙人'},
+ ]},
+{icon:'🎤',title:'企业培训师',ind:'企业培训·人才发展',sal:'12k-30k/月',edu:'本科',expYears:3,
+ tags:['课程开发','TTT认证','演讲控场','行业经验'],
+ reqs:['本科及以上，人力资源/管理相关优先','3年以上实际业务或管理经验','能独立开发并交付完整培训课程','出色的演讲控场能力，语言逻辑清晰有感染力','在销售/管理/职场效能等领域有深度积累'],
+ baseCities:['北京','上海','深圳','广州','成都'],
+ mbtiMatch:['ENFJ','ENTJ','ENFP','ESFJ','ESTJ'],
+ zodiacBoost:['狮子座','射手座','白羊座','双子座'],
+ dims:{EI:1,SN:0,TF:0,JP:1},
+ interests:['SO','EX','EN'],
+ careerPath:[
+   {yr:'0-3年',role:'内训讲师/培训专员',sal:'8k-15k',desc:'开发课程，内部授课，积累教学经验'},
+   {yr:'3-6年',role:'资深培训师',sal:'15k-25k',desc:'主导重点培训项目，建立个人品牌课程'},
+   {yr:'6-10年',role:'首席培训师/顾问',sal:'25k-50k',desc:'外部付费授课，咨询客户培训体系'},
+   {yr:'10年+',role:'培训顾问公司创始人',sal:'50k-200k',desc:'创办培训机构，版权课程，知识付费'},
+   {yr:'天花板',role:'行业知名IP讲师',sal:'无上限',desc:'出书、巡讲、个人知识品牌'},
+ ]},
+{icon:'💹',title:'投资分析师（VC/PE）',ind:'金融·投资机构',sal:'20k-50k/月',edu:'本科',expYears:0,
+ tags:['行业研究','财务建模','尽职调查','投资逻辑'],
+ reqs:['985/211高校金融/经济/理工相关专业','扎实财务建模与估值能力','能独立撰写行业研究报告和投资备忘录','有券商/投行/咨询/产业实习经历者优先','逻辑严密，对商业模式有深刻理解'],
+ baseCities:['北京','上海','深圳'],
+ mbtiMatch:['INTJ','INTP','ENTJ','ENTP','ISTJ'],
+ zodiacBoost:['摩羯座','天蝎座','处女座','双子座'],
+ dims:{EI:-1,SN:0,TF:1,JP:1},
+ interests:['AN','EN'],
+ careerPath:[
+   {yr:'0-3年',role:'投资分析师',sal:'12k-25k',desc:'行业研究、财务建模、项目尽职调查'},
+   {yr:'3-6年',role:'投资经理',sal:'25k-45k',desc:'独立负责投资项目，从接触到签约'},
+   {yr:'6-10年',role:'投资总监/合伙人候选',sal:'45k-80k',desc:'主导重大投资决策，建立行业资源'},
+   {yr:'10年+',role:'合伙人/管理合伙人',sal:'100k-500k',desc:'管理基金，负责募资，影响行业格局'},
+   {yr:'天花板',role:'基金创始人',sal:'无上限',desc:'创办自己的VC/PE基金'},
+ ]},
+{icon:'🎬',title:'短视频导演/内容策划',ind:'新媒体/影视·内容',sal:'12k-28k/月',edu:'本科',expYears:2,
+ tags:['内容策划','分镜脚本','现场执导','数据复盘'],
+ reqs:['影视/新闻/传播相关本科','2年以上短视频内容策划/导演经验','能独立撰写拍摄方案和分镜脚本','有实际拍摄现场执行经验','了解平台算法，能结合数据优化内容'],
+ baseCities:['北京','上海','深圳','广州','成都'],
+ mbtiMatch:['ENFP','ENTP','INFP','INFJ','ENFJ'],
+ zodiacBoost:['狮子座','射手座','双子座','白羊座'],
+ dims:{EI:0,SN:-1,TF:-1,JP:-1},
+ interests:['CR','EX','EN'],
+ careerPath:[
+   {yr:'0-2年',role:'内容策划/助理导演',sal:'6k-14k',desc:'写脚本，协助拍摄，学习内容方法论'},
+   {yr:'3-5年',role:'内容导演/策划负责人',sal:'14k-25k',desc:'独立操盘内容项目，负责从策划到发布'},
+   {yr:'5-8年',role:'内容总监/创意总监',sal:'25k-45k',desc:'统筹内容团队，主导内容策略'},
+   {yr:'8年+',role:'内容VP/创业',sal:'45k-100k+',desc:'负责公司整体内容战略，或自立门户'},
+   {yr:'天花板',role:'内容公司创始人',sal:'无上限',desc:'创办内容公司或打造现象级爆款IP'},
+ ]},
+{icon:'🌿',title:'ESG/可持续发展顾问',ind:'咨询/企业·可持续',sal:'15k-35k/月',edu:'本科',expYears:2,
+ tags:['ESG报告','碳核算','GRI标准','企业咨询'],
+ reqs:['环境科学/商科/工程相关本科','2年以上ESG/可持续发展领域工作经验','能独立撰写企业ESG报告（GRI/TCFD/SASB）','了解碳排放核算和碳市场知识','英语流利，能处理英文报告'],
+ baseCities:['北京','上海','深圳','广州'],
+ mbtiMatch:['INFJ','INTJ','ENFJ','INFP','ENTJ'],
+ zodiacBoost:['水瓶座','天秤座','处女座','摩羯座'],
+ dims:{EI:-1,SN:-1,TF:1,JP:1},
+ interests:['AN','SO','EN'],
+ careerPath:[
+   {yr:'0-2年',role:'ESG分析师',sal:'10k-18k',desc:'协助撰写报告，学习GRI/TCFD框架'},
+   {yr:'3-5年',role:'ESG顾问',sal:'18k-30k',desc:'独立服务企业客户，主导报告撰写'},
+   {yr:'5-8年',role:'高级顾问/项目负责人',sal:'30k-50k',desc:'管理多个客户，拓展ESG咨询服务'},
+   {yr:'8年+',role:'ESG合伙人/总监',sal:'50k-100k',desc:'商务拓展，战略咨询，行业影响力'},
+   {yr:'天花板',role:'可持续发展专家顾问',sal:'100k+',desc:'顶级ESG顾问，推动政策与行业标准'},
+ ]},
+];
+
+// ── City recommendation ────────────────────────────────────────────────────
+const CLIMATE_CITIES={
+  '热带炎热':['深圳','广州','厦门','海口'],
+  '温暖湿润':['上海','杭州','成都','南京','厦门'],
+  '四季分明':['北京','上海','青岛','西安','南京'],
+  '凉爽干燥':['北京','昆明','成都','西安'],
+};
+
+function recommendCity(job){
+  const pCities=profile.cities;
+  const climate=profile.climate;
+  // Check if user has preferred cities that match job's base cities
+  if(pCities.includes('不限')||pCities.length===0){
+    if(climate&&CLIMATE_CITIES[climate]){
+      const match=job.baseCities.filter(c=>CLIMATE_CITIES[climate].includes(c));
+      return match.length?match[0]:job.baseCities[0];
+    }
+    return job.baseCities[0];
+  }
+  const intersection=job.baseCities.filter(c=>pCities.includes(c));
+  if(intersection.length)return intersection[0];
+  if(climate&&CLIMATE_CITIES[climate]){
+    const climateMatch=job.baseCities.filter(c=>CLIMATE_CITIES[climate].includes(c));
+    if(climateMatch.length)return climateMatch[0];
+  }
+  return job.baseCities[0];
+}
+
+// ── Job matching ───────────────────────────────────────────────────────────
+function matchJobs(sc,calcMbti){
+  const yrsNum=profile.years==='0'?0:profile.years==='1-2'?1:profile.years==='3-5'?3:profile.years==='5-10'?5:10;
+  const declaredMbti=profile.mbti||calcMbti;
+
+  return JOBS.map(j=>{
+    let score=0;
+
+    // Interest match (0-40)
+    j.interests.forEach(k=>{score+=sc[k]||0;});
+    score=Math.round(score/j.interests.length*0.4);
+
+    // MBTI match (0-25)
+    if(j.mbtiMatch.includes(declaredMbti))score+=25;
+    else{
+      let dimMatch=0;
+      const mt=declaredMbti;
+      if(mt[0]==='E'&&j.dims.EI>0||mt[0]==='I'&&j.dims.EI<0)dimMatch++;
+      if(mt[1]==='N'&&j.dims.SN<0||mt[1]==='S'&&j.dims.SN>0)dimMatch++;
+      if(mt[2]==='T'&&j.dims.TF>0||mt[2]==='F'&&j.dims.TF<0)dimMatch++;
+      if(mt[3]==='J'&&j.dims.JP>0||mt[3]==='P'&&j.dims.JP<0)dimMatch++;
+      score+=dimMatch*6;
+    }
+
+    // Zodiac boost (0-8)
+    if(profile.zodiac&&j.zodiacBoost.includes(profile.zodiac))score+=8;
+
+    // Experience match (0-15)
+    if(yrsNum>=j.expYears)score+=15;
+    else score+=Math.max(0,15-((j.expYears-yrsNum)*4));
+
+    // Education penalty
+    const eduOrder=['高中/中专','大专','本科','硕士','博士'];
+    const userEduIdx=eduOrder.indexOf(profile.edu);
+    const reqEduIdx=eduOrder.indexOf(j.edu);
+    if(userEduIdx>=0&&reqEduIdx>=0&&userEduIdx<reqEduIdx)score-=12;
+
+    return{...j,score,city:recommendCity(j)};
+  }).sort((a,b)=>b.score-a.score).slice(0,6);
+}
+
+// ── Build result ───────────────────────────────────────────────────────────
+function buildResult(){
+  const sc=calcScores();
+  const calcM=calcMBTI(sc);
+  const finalMbti=profile.mbti||calcM;
+  resultCalc={sc,calcM,finalMbti};
+
+  // MBTI card
+  const mbtiNames={
+    INTJ:'建筑师',INTP:'逻辑学家',ENTJ:'指挥官',ENTP:'辩论家',
+    INFJ:'提倡者',INFP:'调停者',ENFJ:'主人公',ENFP:'竞选者',
+    ISTJ:'物流师',ISFJ:'守卫者',ESTJ:'总经理',ESFJ:'执政官',
+    ISTP:'鉴赏家',ISFP:'探险家',ESTP:'企业家',ESFP:'表演者',
+  };
+  const mc=document.getElementById('mbtiCard');
+  const EIpct=sc.EI;const SNpct=100-sc.SN;const TFpct=sc.TF;const JPpct=sc.JP;
+  mc.innerHTML=`
+    <div class="mbti-big">${finalMbti}</div>
+    <div class="mbti-name">${mbtiNames[finalMbti]||'独特的你'}${profile.mbti&&profile.mbti!==calcM?` <span style="font-size:11px;color:var(--muted)">测试结果: ${calcM}</span>`:''}</div>
+    <div class="dim-row"><div class="dim-ab">E</div><div class="dim-bar"><div class="dim-fill" id="dEI" style="width:0%"></div></div><div class="dim-val">${EIpct}%</div></div>
+    <div class="dim-row"><div class="dim-ab">N</div><div class="dim-bar"><div class="dim-fill" id="dSN" style="width:0%"></div></div><div class="dim-val">${SNpct}%</div></div>
+    <div class="dim-row"><div class="dim-ab">T</div><div class="dim-bar"><div class="dim-fill" id="dTF" style="width:0%"></div></div><div class="dim-val">${TFpct}%</div></div>
+    <div class="dim-row"><div class="dim-ab">J</div><div class="dim-bar"><div class="dim-fill" id="dJP" style="width:0%"></div></div><div class="dim-val">${JPpct}%</div></div>
+  `;
+  setTimeout(()=>{
+    document.getElementById('dEI').style.width=EIpct+'%';
+    document.getElementById('dSN').style.width=SNpct+'%';
+    document.getElementById('dTF').style.width=TFpct+'%';
+    document.getElementById('dJP').style.width=JPpct+'%';
+  },100);
+
+  // Statement
+  const topInterest=Object.entries({CR:sc.CR,EX:sc.EX,AN:sc.AN,TE:sc.TE,SO:sc.SO,EN:sc.EN}).sort((a,b)=>b[1]-a[1]);
+  const interestNames={CR:'创造与设计',EX:'表达与传播',AN:'分析与研究',TE:'技术与工程',SO:'帮助与连接人',EN:'商业与领导'};
+  document.getElementById('stmt').textContent=
+    `你是一个${finalMbti}型的人，${topInterest[0][1]>60?'你天生在'+interestNames[topInterest[0][0]]+'上有强烈的热情':'你有均衡的多元兴趣'}。${profile.zodiac?'作为'+profile.zodiac+'，':''}你适合在${profile.climate||'适宜'}的城市中发挥潜力。这不是标准答案，而是你的方向起点。`;
+
+  // Tags
+  const tagsEl=document.getElementById('rTags');
+  tagsEl.innerHTML='';
+  const topTags=[interestNames[topInterest[0][0]],interestNames[topInterest[1][0]],finalMbti,profile.zodiac].filter(Boolean);
+  topTags.forEach(t=>{const s=document.createElement('span');s.className='tagc';s.textContent=t;tagsEl.appendChild(s);});
+
+  // Jobs
+  const jobs=matchJobs(sc,calcM);
+  const jl=document.getElementById('jobList');jl.innerHTML='';
+  jobs.forEach((job,i)=>{
+    const yrsNum=profile.years==='0'?0:profile.years==='1-2'?1:profile.years==='3-5'?3:profile.years==='5-10'?5:10;
+    const fits=yrsNum>=job.expYears;
+    const card=document.createElement('div');card.className='jcard';
+    card.innerHTML=`
+      <div class="jhd" onclick="toggleJob(this)">
+        <div class="j-ico">${job.icon}</div>
+        <div class="j-wrap">
+          <div class="j-ttl">${job.title}</div>
+          <div class="j-city">📍 ${job.city}</div>
+          <div class="j-ind">${job.ind}</div>
+          <div class="j-tags">${job.tags.map(t=>`<span class="j-tag">${t}</span>`).join('')}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+          <div class="j-sal">${job.sal}</div>
+          ${fits?'<span class="fit-badge">✓ 匹配</span>':'<span style="font-size:11px;color:var(--muted)">可转型</span>'}
+        </div>
+      </div>
+      <div class="jtabs">
+        <button class="jtab on" onclick="switchTab(this,'detail',${i})">岗位详情</button>
+        <button class="jtab" onclick="switchTab(this,'resume',${i})">简历模板</button>
+        <button class="jtab" onclick="switchTab(this,'career',${i})">职业路径</button>
+        <button class="jtab" onclick="switchTab(this,'match',${i})">简历匹配</button>
+      </div>
+      <div class="jbd open" id="jbd-${i}">
+        <div id="jcontent-${i}">${buildDetail(job)}</div>
+      </div>
+      <div class="hint">点击展开详情 ↕</div>
+    `;
+    jl.appendChild(card);
+  });
+
+  // Store jobs for tab switching
+  window._jobs=jobs;
+}
+
+function toggleJob(el){
+  const bd=el.closest('.jcard').querySelector('.jbd');
+  bd.classList.toggle('open');
+}
+
+function switchTab(btn,type,idx){
+  btn.closest('.jtabs').querySelectorAll('.jtab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  const job=window._jobs[idx];
+  const cont=document.getElementById('jcontent-'+idx);
+  if(type==='detail')cont.innerHTML=buildDetail(job);
+  else if(type==='resume')cont.innerHTML=buildResume(job);
+  else if(type==='career')cont.innerHTML=buildCareer(job);
+  else if(type==='match')cont.innerHTML=buildMatch(job,idx);
+  const bd=document.getElementById('jbd-'+idx);
+  bd.classList.add('open');
+}
+
+function buildDetail(job){
+  return`<div class="edu-row">
+    <div class="ebadge">🎓 <strong>${job.edu}及以上</strong></div>
+    <div class="ebadge">⏱ <strong>${job.expYears?job.expYears+'年以上':'无硬性要求'}</strong></div>
+  </div>
+  <div style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--muted);text-transform:uppercase;margin-bottom:8px;">岗位要求</div>
+  <ul class="req-list">${job.reqs.map(r=>`<li>${r}</li>`).join('')}</ul>
+  ${buildAdvice(job)}`;
+}
+
+function buildAdvice(job){
+  const{years,job:cj,edu}=profile;
+  const yrsNum=years==='0'?0:years==='1-2'?1:years==='3-5'?3:years==='5-10'?5:10;
+  const status=profile.gender?'':'';
+  let adv='';
+  if(yrsNum===0){adv=`作为应届生，现在是打基础的最好时机。建议先寻找${job.title}相关的实习，重点学习${job.tags.slice(0,2).join('、')}，用1-2个真实项目证明自己的能力。`;}
+  else if(yrsNum<=2){adv=`你有${years}年工作经验，处于职业起步期。建议重点补充${job.tags.slice(0,2).join('、')}的实战能力，争取在3-6个月内完成一个可展示的项目作品。`;}
+  else if(cj){adv=`你目前从事${cj}，可以找到与「${job.title}」的共通点。建议从现有工作中积累可迁移的经验，重点补充${job.tags[0]}和${job.tags[1]}的实战能力，一般需要6-12个月准备期。`;}
+  else{adv=`重点用实战项目和作品证明你的能力，这比学历证书更有说服力。先从${job.tags[0]}入手，3个月内产出一个可展示的成果。`;}
+  return`<div style="background:rgba(56,178,255,.06);border:1px solid rgba(56,178,255,.18);border-radius:13px;padding:13px 15px;margin-top:12px;"><div style="font-size:10px;font-weight:700;color:#60b8d0;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">🛤 你的转型建议</div><p style="font-size:13px;color:#90c8d8;line-height:1.65;">${adv}</p></div>`;
+}
+
+function buildResume(job){
+  const name=profile.name||'张明';
+  const yrsNum=profile.years==='0'?0:profile.years==='1-2'?1:profile.years==='3-5'?3:profile.years==='5-10'?5:10;
+  const isJunior=yrsNum<=2;const isMid=yrsNum>2&&yrsNum<=5;const isSenior=yrsNum>5;
+  const level=isJunior?'初级':isMid?'':  '高级/资深';
+  const edu=profile.edu||'本科';
+
+  let expHtml='';
+  if(isSenior){expHtml=`
+    <div class="r-item"><div class="r-item-hd"><span>某科技集团 · ${level}${job.title}</span><span style="color:var(--muted)">2019.03 - 至今</span></div>
+    <div class="r-item-sub">${job.ind}</div>
+    <ul><li>主导${job.tags[0]}相关核心工作，推动业务指标增长30%+</li><li>统筹${job.tags[1]}项目，带领5-8人团队按时完成交付</li><li>与产品/研发/运营跨部门深度协作，建立标准化工作流程</li></ul></div>
+    <div class="r-item"><div class="r-item-hd"><span>某互联网公司 · ${job.title}</span><span style="color:var(--muted)">2016.06 - 2019.02</span></div>
+    <div class="r-item-sub">${job.ind}</div>
+    <ul><li>负责${job.tags[2]||job.tags[0]}模块，独立推进从需求到上线的完整闭环</li><li>优化现有工作流程，效率提升约25%</li></ul></div>
+  `;}else if(isMid){expHtml=`
+    <div class="r-item"><div class="r-item-hd"><span>某互联网公司 · ${job.title}</span><span style="color:var(--muted)">2021.07 - 至今</span></div>
+    <div class="r-item-sub">${job.ind}</div>
+    <ul><li>独立负责${job.tags[0]}工作，产出可落地的完整方案</li><li>与${job.tags[1]}相关团队配合，参与重要项目交付</li><li>积累了${job.tags.join('、')}等核心技能与实战经验</li></ul></div>
+    <div class="r-item"><div class="r-item-hd"><span>某公司 · 初级${job.title}</span><span style="color:var(--muted)">2020.03 - 2021.06</span></div>
+    <div class="r-item-sub">${job.ind}</div>
+    <ul><li>协助完成${job.tags[0]}日常工作，快速上手核心流程</li><li>参与${job.tags[1]}项目执行，获得良好评价</li></ul></div>
+  `;}else{expHtml=`
+    <div class="r-item"><div class="r-item-hd"><span>${profile.job?profile.job+'（实习）':'某公司实习生'}</span><span style="color:var(--muted)">2023.07 - 2023.12</span></div>
+    <div class="r-item-sub">实习经历</div>
+    <ul><li>参与${job.tags[0]}相关工作，快速学习行业知识</li><li>协助完成${job.tags[1]}基础任务，表现积极</li></ul></div>
+  `;}
+
+  return`<div class="resume-tpl">
+    <div class="r-name">${name}</div>
+    <div class="r-contact">📧 ${name.toLowerCase()}@email.com · 📱 138-0000-0000 · ${job.city||'上海'}</div>
+    <div style="font-size:12px;color:var(--sub);font-weight:600;margin-bottom:4px;">求职意向：${job.title} | ${job.ind}</div>
+    <div class="r-sec"><div class="r-sec-ttl">教育背景</div>
+      <div class="r-item"><div class="r-item-hd"><span>某大学 · ${edu}</span><span style="color:var(--muted)">2016 - 2020</span></div>
+      <div class="r-item-sub">相关专业</div></div>
+    </div>
+    <div class="r-sec"><div class="r-sec-ttl">工作经历</div>${expHtml}</div>
+    <div class="r-sec"><div class="r-sec-ttl">核心技能</div>
+      <div style="font-size:13px;color:var(--sub);line-height:2;">${job.tags.join(' · ')} · 沟通协作 · 项目管理</div>
+    </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:14px;text-align:center;">↑ 这是示范模板，请根据真实经历修改填充</div>
+  </div>`;
+}
+
+function buildCareer(job){
+  return`<div class="cpath">${job.careerPath.map((n,i)=>`
+    <div class="cnode">
+      <div class="cn-yr">${n.yr}</div>
+      <div class="cn-role">${n.role}</div>
+      <div class="cn-sal">${n.sal}</div>
+      <div class="cn-desc">${n.desc}</div>
+    </div>
+  `).join('')}</div>`;
+}
+
+function buildMatch(job,idx){
+  return`<div>
+    <p style="font-size:13px;color:var(--sub);margin-bottom:12px;">粘贴你的简历文字，测试与该岗位的匹配程度</p>
+    <textarea class="rmatch-area" id="rtext-${idx}" placeholder="将你的简历内容粘贴到这里..."></textarea>
+    <button class="btn" style="margin-top:10px;" onclick="doMatch(${idx})">分析匹配度</button>
+    <div class="match-res" id="mres-${idx}"></div>
+  </div>`;
+}
+
+function doMatch(idx){
+  const text=document.getElementById('rtext-'+idx).value.toLowerCase();
+  const job=window._jobs[idx];
+  if(!text.trim()){return;}
+  const keywords=[...job.tags,...job.reqs.flatMap(r=>r.replace(/[^一-龥a-zA-Z\s]/g,' ').split(/\s+/).filter(w=>w.length>2))];
+  const unique=[...new Set(keywords)].slice(0,12);
+  let hits=0;
+  const items=unique.slice(0,8).map(k=>{
+    const hit=text.includes(k.toLowerCase())||text.includes(k.slice(0,2).toLowerCase());
+    if(hit)hits++;
+    return{k,hit};
+  });
+  const pct=Math.round(hits/items.length*100);
+  const el=document.getElementById('mres-'+idx);
+  el.innerHTML=`
+    <div class="match-pct">${pct}%</div>
+    <div class="match-sub">与「${job.title}」的简历匹配度</div>
+    ${items.map(it=>`<div class="match-item"><span class="mk">${it.k}</span><span class="${it.hit?'hit':'miss'}">${it.hit?'✓ 匹配':'✗ 缺失'}</span></div>`).join('')}
+    <p style="font-size:12px;color:var(--muted);margin-top:10px;">${pct>=70?'匹配度较高，建议针对缺失关键词优化简历':pct>=40?'有一定匹配基础，重点补充缺失的技能经验':'匹配度偏低，建议先积累相关经验再投递'}</p>
+  `;
+  el.classList.add('show');
+}
+
+// ── Restart ─────────────────────────────────────────────────────────────────
+function restart(){
+  mode='simple';answers=[];curQ=0;selCities=[];
+  profile={name:'',age:'',gender:'',mbti:'',zodiac:'',edu:'',years:'',job:'',city:'',climate:'',cities:[]};
+  document.querySelectorAll('.chip.on,.mc.on').forEach(c=>c.classList.remove('on'));
+  document.getElementById('mc-simple').classList.add('on');
+  ['pName','pAge','pMBTI','pEdu','pYears','pJob','pCity','pGender','pZodiac','pClimate'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.value='';
+  });
+  document.getElementById('jobList').innerHTML='';
+  document.getElementById('rTags').innerHTML='';
+  document.getElementById('stmt').textContent='';
+  document.getElementById('mbtiCard').innerHTML='';
+  go(0);
+}
+
+// Init slider
+document.addEventListener('DOMContentLoaded',()=>{
+  const s=document.getElementById('qSlider');
+  if(s)updateSliderUI(s);
+});
+</script>
+</body>
+</html>
